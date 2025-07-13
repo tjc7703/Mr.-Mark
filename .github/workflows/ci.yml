@@ -1,0 +1,45 @@
+name: CI/CD
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: mrmark
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies (frontend)
+        run: cd apps/frontend && pnpm install
+      - name: Install dependencies (backend)
+        run: cd apps/backend && python3 -m venv venv && source venv/bin/activate && pip install fastapi uvicorn
+      - name: Install dependencies (ai-engine)
+        run: cd apps/ai-engine && python3 -m venv venv && source venv/bin/activate && pip install fastapi uvicorn
+      - name: Build frontend
+        run: cd apps/frontend && pnpm build
+      - name: Test backend
+        run: cd apps/backend && source venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8000 & sleep 5 && curl http://localhost:8000/
+      - name: Test ai-engine
+        run: cd apps/ai-engine && source venv/bin/activate && uvicorn app:app --host 0.0.0.0 --port 9000 & sleep 5 && curl http://localhost:9000/predict
+
