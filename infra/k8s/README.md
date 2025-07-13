@@ -8,6 +8,8 @@
 - .github/workflows/cicd.yml: 테스트, 빌드, 배포, 슬랙 알림 자동화
 
 ## 실시간 장애 복구/운영 자동화
+- autoscale.yaml: HPA(Horizontal Pod Autoscaler)로 실시간 자동 확장
+- selfheal-check.sh: 장애 감지 시 자동 복구
 - health check, self-healing, autoscaling, 장애 감지/알림
 
 ## 데이터/모델 거버넌스
