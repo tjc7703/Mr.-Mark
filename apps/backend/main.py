@@ -6,6 +6,8 @@ import json
 import random
 from datetime import datetime, timedelta
 import asyncio
+from feedback_api import router as feedback_router
+from abtest import router as abtest_router
 
 app = FastAPI(title="Mr. Mark API", version="1.0.0")
 
@@ -44,6 +46,9 @@ TREND_KEYWORDS = [
 NEWS_SOURCES = [
     "마케팅 인사이트", "디지털 마케팅 뉴스", "브랜드 스토리", "마케팅 트렌드"
 ]
+
+app.include_router(feedback_router)
+app.include_router(abtest_router)
 
 @app.get("/")
 def root():

@@ -3,8 +3,11 @@
 ## 품질 리포트 자동화
 - scripts/auto_quality_report.sh: 품질 리포트 자동 생성 및 저장
 
-## 실험/피드백 기반 개선
-- docs/experimentation.md, docs/collaboration.md 참고
+## KPI 자동 리포트
+- scripts/auto_kpi_report.sh: 운영/사용/품질/비용 KPI 자동 리포트
 
-## 비용/리소스 최적화
-- infra/cost/README.md 참고 
+## 개선 포인트 자동화
+- KPI/피드백/실험 데이터 기반 개선 포인트 자동 리포트
+
+## 글로벌 확장/협업 자동화
+- 다국어, 다지역, 글로벌 협업/운영 자동화 템플릿 
