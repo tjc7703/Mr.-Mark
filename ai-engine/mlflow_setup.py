@@ -9,7 +9,9 @@ if __name__ == "__main__":
     mlflow.set_experiment("mrmark-ai-experiment")
 
     data = load_iris()
-    X_train, X_test, y_train, y_test = train_test_split(data.data, data.target, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(
+        data.data, data.target, test_size=0.2
+    )
     model = RandomForestClassifier()
     model.fit(X_train, y_train)
     acc = model.score(X_test, y_test)
@@ -18,4 +20,4 @@ if __name__ == "__main__":
         mlflow.log_param("model_type", "RandomForestClassifier")
         mlflow.log_metric("accuracy", acc)
         mlflow.sklearn.log_model(model, "model")
-        print(f"Logged run with accuracy: {acc}") 
+        print(f"Logged run with accuracy: {acc}")

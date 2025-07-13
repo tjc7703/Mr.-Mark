@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class BaseModel(ABC):
     @abstractmethod
     def train(self, X, y):
@@ -11,4 +12,4 @@ class BaseModel(ABC):
 
     @abstractmethod
     def evaluate(self, X, y):
-        pass 
+        pass

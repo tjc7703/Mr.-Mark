@@ -13,9 +13,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_root():
     return {"msg": "Mr. Mark Backend API"}
+
 
 @app.get("/feed/today")
 def today_feed():
@@ -28,7 +30,7 @@ def today_feed():
             "source": "마케팅 인사이트",
             "url": "https://www.marketinginsight.co.kr/2024-digital-marketing-trends",
             "published_at": "2024-01-15T10:30:00Z",
-            "category": "트렌드"
+            "category": "트렌드",
         },
         {
             "id": 2,
@@ -37,7 +39,7 @@ def today_feed():
             "source": "소셜마케팅 뉴스",
             "url": "https://socialmarketing.news/instagram-reels-success-cases",
             "published_at": "2024-01-15T09:15:00Z",
-            "category": "소셜미디어"
+            "category": "소셜미디어",
         },
         {
             "id": 3,
@@ -46,7 +48,7 @@ def today_feed():
             "source": "바이럴 마케팅 가이드",
             "url": "https://viralmarketing.guide/tiktok-challenge-strategy",
             "published_at": "2024-01-15T08:45:00Z",
-            "category": "바이럴마케팅"
+            "category": "바이럴마케팅",
         },
         {
             "id": 4,
@@ -55,7 +57,7 @@ def today_feed():
             "source": "콘텐츠 마케팅 연구소",
             "url": "https://contentmarketing.lab/roi-measurement-guide",
             "published_at": "2024-01-15T07:30:00Z",
-            "category": "콘텐츠마케팅"
+            "category": "콘텐츠마케팅",
         },
         {
             "id": 5,
@@ -64,10 +66,11 @@ def today_feed():
             "source": "이메일 마케팅 전문가",
             "url": "https://emailmarketing.pro/lifecycle-automation",
             "published_at": "2024-01-15T06:20:00Z",
-            "category": "이메일마케팅"
-        }
+            "category": "이메일마케팅",
+        },
     ]
     return {"news": news_data}
+
 
 @app.get("/trend")
 def trend():
@@ -77,34 +80,35 @@ def trend():
             "keyword": "AI 마케팅 자동화",
             "volume": 8500,
             "growth": "+15%",
-            "url": "https://trends.google.com/trends/explore?q=AI%20마케팅%20자동화"
+            "url": "https://trends.google.com/trends/explore?q=AI%20마케팅%20자동화",
         },
         {
             "keyword": "틱톡 마케팅",
             "volume": 7200,
             "growth": "+23%",
-            "url": "https://trends.google.com/trends/explore?q=틱톡%20마케팅"
+            "url": "https://trends.google.com/trends/explore?q=틱톡%20마케팅",
         },
         {
             "keyword": "바이럴 콘텐츠",
             "volume": 6800,
             "growth": "+18%",
-            "url": "https://trends.google.com/trends/explore?q=바이럴%20콘텐츠"
+            "url": "https://trends.google.com/trends/explore?q=바이럴%20콘텐츠",
         },
         {
             "keyword": "개인화 마케팅",
             "volume": 6100,
             "growth": "+12%",
-            "url": "https://trends.google.com/trends/explore?q=개인화%20마케팅"
+            "url": "https://trends.google.com/trends/explore?q=개인화%20마케팅",
         },
         {
             "keyword": "메타버스 마케팅",
             "volume": 5400,
             "growth": "+8%",
-            "url": "https://trends.google.com/trends/explore?q=메타버스%20마케팅"
-        }
+            "url": "https://trends.google.com/trends/explore?q=메타버스%20마케팅",
+        },
     ]
     return {"trends": trends_data}
+
 
 @app.get("/goal")
 def goal():
@@ -117,9 +121,10 @@ def goal():
             {"task": "오늘의 콘텐츠 업로드", "completed": False},
             {"task": "댓글 및 DM 응답", "completed": False},
             {"task": "경쟁사 분석", "completed": False},
-            {"task": "데이터 분석 및 리포트 작성", "completed": False}
-        ]
+            {"task": "데이터 분석 및 리포트 작성", "completed": False},
+        ],
     }
+
 
 @app.get("/ai/feedback")
 def ai_feedback():
@@ -129,20 +134,21 @@ def ai_feedback():
             {
                 "type": "콘텐츠 최적화",
                 "message": "해시태그 #마케팅 #소셜미디어 #바이럴 추가 권장",
-                "priority": "high"
+                "priority": "high",
             },
             {
                 "type": "포스팅 시간",
                 "message": "오후 7-9시 포스팅 시 참여도 30% 향상 예상",
-                "priority": "medium"
+                "priority": "medium",
             },
             {
                 "type": "콘텐츠 유형",
                 "message": "비디오 콘텐츠 비중을 60%로 증가 권장",
-                "priority": "high"
-            }
+                "priority": "high",
+            },
         ]
     }
+
 
 @app.get("/pipeline/status")
 def pipeline_status():
@@ -154,82 +160,54 @@ def pipeline_status():
                 "status": "completed",
                 "lastRun": "2024-01-15T10:30:00Z",
                 "duration": 120,
-                "recordsProcessed": 1500
+                "recordsProcessed": 1500,
             },
             {
                 "name": "데이터 정제",
                 "status": "running",
                 "lastRun": "2024-01-15T10:35:00Z",
                 "duration": 45,
-                "recordsProcessed": 1200
+                "recordsProcessed": 1200,
             },
             {
                 "name": "AI 모델 학습",
                 "status": "completed",
                 "lastRun": "2024-01-15T09:00:00Z",
                 "duration": 1800,
-                "recordsProcessed": 800
+                "recordsProcessed": 800,
             },
             {
                 "name": "품질 검증",
                 "status": "completed",
                 "lastRun": "2024-01-15T10:40:00Z",
                 "duration": 30,
-                "recordsProcessed": 1200
+                "recordsProcessed": 1200,
             },
             {
                 "name": "데이터 마트 구축",
                 "status": "idle",
                 "lastRun": "2024-01-15T09:30:00Z",
                 "duration": 300,
-                "recordsProcessed": 800
-            }
+                "recordsProcessed": 800,
+            },
         ]
     }
+
 
 @app.get("/quality/metrics")
 def quality_metrics():
     """품질 메트릭"""
     return {
         "metrics": [
-            {
-                "name": "완성도",
-                "value": 0.95,
-                "threshold": 0.9,
-                "status": "good"
-            },
-            {
-                "name": "정확도",
-                "value": 0.88,
-                "threshold": 0.9,
-                "status": "warning"
-            },
-            {
-                "name": "일관성",
-                "value": 0.92,
-                "threshold": 0.85,
-                "status": "good"
-            },
-            {
-                "name": "최신성",
-                "value": 0.78,
-                "threshold": 0.8,
-                "status": "warning"
-            },
-            {
-                "name": "유효성",
-                "value": 0.96,
-                "threshold": 0.95,
-                "status": "good"
-            },
-            {
-                "name": "고유성",
-                "value": 0.98,
-                "threshold": 0.98,
-                "status": "good"
-            }
+            {"name": "완성도", "value": 0.95, "threshold": 0.9, "status": "good"},
+            {"name": "정확도", "value": 0.88, "threshold": 0.9, "status": "warning"},
+            {"name": "일관성", "value": 0.92, "threshold": 0.85, "status": "good"},
+            {"name": "최신성", "value": 0.78, "threshold": 0.8, "status": "warning"},
+            {"name": "유효성", "value": 0.96, "threshold": 0.95, "status": "good"},
+            {"name": "고유성", "value": 0.98, "threshold": 0.98, "status": "good"},
         ]
     }
+
 
 @app.get("/ai/performance")
 def ai_performance():
@@ -242,7 +220,7 @@ def ai_performance():
                 "precision": 0.82,
                 "recall": 0.88,
                 "f1Score": 0.85,
-                "lastTrained": "2024-01-15T09:00:00Z"
+                "lastTrained": "2024-01-15T09:00:00Z",
             },
             {
                 "name": "트렌드 예측",
@@ -250,7 +228,7 @@ def ai_performance():
                 "precision": 0.75,
                 "recall": 0.80,
                 "f1Score": 0.77,
-                "lastTrained": "2024-01-15T08:30:00Z"
+                "lastTrained": "2024-01-15T08:30:00Z",
             },
             {
                 "name": "콘텐츠 감정 분석",
@@ -258,7 +236,7 @@ def ai_performance():
                 "precision": 0.80,
                 "recall": 0.85,
                 "f1Score": 0.82,
-                "lastTrained": "2024-01-15T08:00:00Z"
+                "lastTrained": "2024-01-15T08:00:00Z",
             },
             {
                 "name": "사용자 클러스터링",
@@ -266,10 +244,11 @@ def ai_performance():
                 "precision": 0.89,
                 "recall": 0.93,
                 "f1Score": 0.91,
-                "lastTrained": "2024-01-15T07:30:00Z"
-            }
+                "lastTrained": "2024-01-15T07:30:00Z",
+            },
         ]
     }
+
 
 @app.get("/quality/issues")
 def quality_issues():
@@ -281,21 +260,21 @@ def quality_issues():
                 "category": "posts_accuracy",
                 "description": "posts 테이블의 정확도가 임계값 미달",
                 "affectedRecords": 150,
-                "recommendation": "데이터 형식 검증 강화 필요"
+                "recommendation": "데이터 형식 검증 강화 필요",
             },
             {
                 "severity": "low",
                 "category": "users_timeliness",
                 "description": "users 테이블의 데이터가 10분 이상 지연",
                 "affectedRecords": 50,
-                "recommendation": "데이터 수집 주기 단축 고려"
+                "recommendation": "데이터 수집 주기 단축 고려",
             },
             {
                 "severity": "high",
                 "category": "hashtags_completeness",
                 "description": "hashtags 테이블의 완성도가 임계값 미달",
                 "affectedRecords": 300,
-                "recommendation": "해시태그 추출 로직 개선 필요"
-            }
+                "recommendation": "해시태그 추출 로직 개선 필요",
+            },
         ]
-    } 
+    }

@@ -9,4 +9,4 @@ for i in range(100):
         print(f"{i}: {r.status_code} {r.json()}")
     except Exception as e:
         print(f"{i}: ERROR {e}")
-    time.sleep(0.1) 
+    time.sleep(0.1)

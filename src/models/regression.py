@@ -2,6 +2,7 @@ from .base_model import BaseModel
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
+
 class RegressionModel(BaseModel):
     def __init__(self):
         self.model = LinearRegression()
@@ -14,4 +15,4 @@ class RegressionModel(BaseModel):
 
     def evaluate(self, X, y):
         preds = self.predict(X)
-        return mean_squared_error(y, preds) 
+        return mean_squared_error(y, preds)

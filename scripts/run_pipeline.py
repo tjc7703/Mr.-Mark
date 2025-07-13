@@ -10,6 +10,7 @@ import subprocess
 import sys
 import os
 
+
 def run_step(name, cmd):
     print(f"\n===== [{name}] 단계 실행 =====")
     try:
@@ -17,6 +18,7 @@ def run_step(name, cmd):
     except subprocess.CalledProcessError as e:
         print(f"[ERROR] {name} 단계에서 오류 발생: {e}")
         sys.exit(1)
+
 
 def main():
     steps = [
@@ -33,5 +35,6 @@ def main():
             print(f"[DUMMY] {name} 단계 완료!")
     print("\n🎉 전체 파이프라인 실행 완료!")
 
+
 if __name__ == "__main__":
-    main() 
+    main()

@@ -9,7 +9,7 @@ kpi = {
     "api_error_rate": 0.002,
     "avg_response_time": 0.21,
     "cost_usd": 42.5,
-    "feedback_score": 4.7
+    "feedback_score": 4.7,
 }
 
-print(json.dumps(kpi, ensure_ascii=False, indent=2)) 
+print(json.dumps(kpi, ensure_ascii=False, indent=2))

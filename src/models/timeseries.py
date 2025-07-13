@@ -1,6 +1,7 @@
 from .base_model import BaseModel
 from prophet import Prophet
 
+
 class TimeSeriesModel(BaseModel):
     def __init__(self):
         self.model = Prophet()
@@ -18,4 +19,5 @@ class TimeSeriesModel(BaseModel):
         forecast = self.model.predict(df)
         # 예시: MSE 계산
         from sklearn.metrics import mean_squared_error
-        return mean_squared_error(df['y'], forecast['yhat']) 
+
+        return mean_squared_error(df["y"], forecast["yhat"])

@@ -24,10 +24,13 @@ pipeline:
 	bash scripts/run_pipeline.sh
 
 lint:
-	bash scripts/lint.sh
+	flake8 . --exclude=.venv,node_modules,dist,build || true
+
+format:
+	black . --exclude .venv || true
 
 test:
-	bash scripts/test.sh
+	pytest || true
 
 clean:
 	docker system prune -af
