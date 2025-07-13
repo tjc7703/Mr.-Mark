@@ -1,5 +1,16 @@
-# ai-engine
- 
-- AI/ML, 트렌드 예측, 추천, 실시간 피드백, 자연어 처리, 레퍼런스 분석 담당
-- OpenAI API, HuggingFace, Prophet, Scikit-learn 등 활용
-- 데이터 웨어하우스/마트와 연동, FastAPI/REST API로 서비스화 
+# AI 엔진 고도화
+
+## MLflow 실험 관리
+- mlflow_setup.py: MLflow 실험 자동화 템플릿
+- 실행: `mlflow ui` (5000포트), `python mlflow_setup.py`
+
+## 실시간/분산 처리
+- backend/stream_processor.py, cache_manager.py 참고
+- ai-engine/에 실시간/분산 학습 템플릿 추가 가능
+
+## 인프라 확장
+- Docker, docker-compose, devcontainer, k8s 템플릿 제공
+- 환경별 config, secrets 관리, 운영 자동화
+
+## 운영 자동화
+- prometheus, alertmanager, slack/webhook 연동 등 
