@@ -1,23 +1,118 @@
-version: "3.8"
+version: "3.9"
 services:
+  # API Gateway
+  gateway:
+    image: kong:3.4
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+      KONG_ADMIN_GUI_URL: http://localhost:8002
+    volumes:
+      - ./kong.yml:/kong.yml
+    command: kong start
+    restart: unless-stopped
+
+  # Frontend (Next.js 14)
   frontend:
-    build: ./apps/frontend
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://gateway:8000
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
+  # Backend (FastAPI)
   backend:
-    build: ./apps/backend
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8001:8001"
     environment:
       - ENV=development
+      - DATABASE_URL=postgresql://user:password@db:5432/mrmark
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+      - gateway
+    restart: unless-stopped
+
+  # AI Engine
   ai-engine:
-    build: ./apps/ai-engine
-    command: uvicorn app:app --host 0.0.0.0 --port 9000 --reload
+    build:
+      context: ./apps/ai-engine
+      dockerfile: Dockerfile
     ports:
       - "9000:9000"
     environment:
       - ENV=development
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+      - gateway
+    restart: unless-stopped
+
+  # Database (PostgreSQL)
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: mrmark
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Cache (Redis)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # Monitoring (Prometheus)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+
+  # Monitoring (Grafana)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
 

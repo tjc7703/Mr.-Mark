@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import json
@@ -8,13 +9,18 @@ from datetime import datetime, timedelta
 import asyncio
 from feedback_api import router as feedback_router
 from abtest import router as abtest_router
+import logging
 
-app = FastAPI(title="Mr. Mark API", version="1.0.0")
+# 로깅 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="Mr. Mark Backend API", version="1.0.0")
 
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -65,165 +71,281 @@ app.include_router(abtest_router)
 
 
 @app.get("/")
-def root():
+def read_root():
     return {"msg": "Mr. Mark Backend API", "version": "1.0.0"}
 
 
 @app.get("/feed/today")
-async def get_today_feed():
-    """오늘의 마케팅 소식 피드"""
-    news_items = [
-        {
-            "title": "2024년 인스타그램 알고리즘 변화, 릴스 중심으로 전환",
-            "content": "인스타그램이 릴스 콘텐츠를 우선적으로 노출하는 새로운 알고리즘을 도입했습니다.",
-            "source": "마케팅 인사이트",
-            "timestamp": datetime.now().isoformat(),
-        },
-        {
-            "title": "AI 기반 마케팅 자동화 도구들의 성장세",
-            "content": "ChatGPT와 같은 AI 도구들이 마케팅 콘텐츠 제작에 혁신을 가져오고 있습니다.",
-            "source": "디지털 마케팅 뉴스",
-            "timestamp": datetime.now().isoformat(),
-        },
-        {
-            "title": "Z세대를 타겟팅한 새로운 마케팅 전략",
-            "content": "진정성과 개성이 중요한 Z세대를 위한 마케팅 접근법이 주목받고 있습니다.",
-            "source": "브랜드 스토리",
-            "timestamp": datetime.now().isoformat(),
-        },
-    ]
-
-    return {
-        "news": [item["title"] for item in news_items],
-        "detailed_news": news_items,
-        "timestamp": datetime.now().isoformat(),
-    }
+def today_feed():
+    """실시간 마케팅 뉴스 피드"""
+    try:
+        news_data = [
+            {
+                "id": 1,
+                "title": "2024년 디지털 마케팅 트렌드: AI와 개인화가 주도",
+                "summary": "AI 기반 개인화 마케팅이 2024년의 핵심 트렌드로 부상하고 있습니다.",
+                "source": "마케팅 인사이트",
+                "url": "https://www.marketinginsight.co.kr/2024-digital-marketing-trends",
+                "published_at": "2024-01-15T10:30:00Z",
+                "category": "트렌드",
+            },
+            {
+                "id": 2,
+                "title": "소셜미디어 마케팅 성공 사례: 인스타그램 릴스 활용법",
+                "summary": "인스타그램 릴스를 활용한 브랜드 마케팅 성공 사례를 소개합니다.",
+                "source": "소셜마케팅 뉴스",
+                "url": "https://socialmarketing.news/instagram-reels-success-cases",
+                "published_at": "2024-01-15T09:15:00Z",
+                "category": "소셜미디어",
+            },
+            {
+                "id": 3,
+                "title": "바이럴 마케팅 전략: 틱톡 챌린지 활용 가이드",
+                "summary": "틱톡 챌린지를 활용한 바이럴 마케팅 전략과 실행 방법을 알아봅니다.",
+                "source": "바이럴 마케팅 가이드",
+                "url": "https://viralmarketing.guide/tiktok-challenge-strategy",
+                "published_at": "2024-01-15T08:45:00Z",
+                "category": "바이럴마케팅",
+            },
+            {
+                "id": 4,
+                "title": "콘텐츠 마케팅 ROI 측정 방법론",
+                "summary": "콘텐츠 마케팅의 투자 대비 수익률을 정확히 측정하는 방법을 제시합니다.",
+                "source": "콘텐츠 마케팅 연구소",
+                "url": "https://contentmarketing.lab/roi-measurement-guide",
+                "published_at": "2024-01-15T07:30:00Z",
+                "category": "콘텐츠마케팅",
+            },
+            {
+                "id": 5,
+                "title": "이메일 마케팅 자동화: 고객 생애주기별 전략",
+                "summary": "고객의 생애주기에 따른 이메일 마케팅 자동화 전략을 구현해보세요.",
+                "source": "이메일 마케팅 전문가",
+                "url": "https://emailmarketing.pro/lifecycle-automation",
+                "published_at": "2024-01-15T06:20:00Z",
+                "category": "이메일마케팅",
+            },
+        ]
+        logger.info(f"피드 데이터 조회 성공: {len(news_data)}개 항목")
+        return {"news": news_data}
+    except Exception as e:
+        logger.error(f"피드 데이터 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="피드 데이터를 불러오는데 실패했습니다.")
 
 
 @app.get("/trend")
-async def get_trends():
-    """실시간 트렌드 데이터"""
-    trends = []
-    for i, keyword in enumerate(TREND_KEYWORDS[:6]):
-        trends.append(
+def trend():
+    """실시간 마케팅 트렌드"""
+    try:
+        trends_data = [
             {
-                "name": keyword,
-                "value": random.randint(1000, 50000),
-                "change": random.uniform(-15.0, 25.0),
-            }
-        )
-
-    return {
-        "trends": [trend["name"] for trend in trends],
-        "detailed_trends": trends,
-        "timestamp": datetime.now().isoformat(),
-    }
-
-
-@app.get("/feedback")
-async def get_ai_feedback():
-    """AI 피드백 시스템"""
-    feedback_options = [
-        {
-            "feedback": "오늘의 릴스 퀄리티가 매우 좋습니다! 해시태그 최적화로 더 많은 도달을 얻을 수 있을 것 같아요.",
-            "score": 8.5,
-            "suggestions": ["트렌딩 해시태그 활용", "첫 3초 훅 강화", "CTA 버튼 추가"],
-        },
-        {
-            "feedback": "콘텐츠는 좋지만 타이밍이 아쉽습니다. 저녁 7-9시 업로드가 더 효과적일 것 같아요.",
-            "score": 7.2,
-            "suggestions": ["업로드 시간 조정", "스토리와 연계", "인터랙션 유도"],
-        },
-        {
-            "feedback": "브랜드 일관성이 뛰어납니다! 다음 단계로 고객 후기 콘텐츠를 추가해보세요.",
-            "score": 9.1,
-            "suggestions": ["고객 후기 수집", "UGC 콘텐츠 활용", "커뮤니티 구축"],
-        },
-    ]
-
-    selected_feedback = random.choice(feedback_options)
-
-    return {
-        "feedback": selected_feedback["feedback"],
-        "score": selected_feedback["score"],
-        "suggestions": selected_feedback["suggestions"],
-        "timestamp": datetime.now().isoformat(),
-    }
+                "keyword": "AI 마케팅 자동화",
+                "volume": 8500,
+                "growth": "+15%",
+                "url": "https://trends.google.com/trends/explore?q=AI%20마케팅%20자동화",
+            },
+            {
+                "keyword": "틱톡 마케팅",
+                "volume": 7200,
+                "growth": "+23%",
+                "url": "https://trends.google.com/trends/explore?q=틱톡%20마케팅",
+            },
+            {
+                "keyword": "바이럴 콘텐츠",
+                "volume": 6800,
+                "growth": "+18%",
+                "url": "https://trends.google.com/trends/explore?q=바이럴%20콘텐츠",
+            },
+            {
+                "keyword": "개인화 마케팅",
+                "volume": 6100,
+                "growth": "+12%",
+                "url": "https://trends.google.com/trends/explore?q=개인화%20마케팅",
+            },
+            {
+                "keyword": "메타버스 마케팅",
+                "volume": 5400,
+                "growth": "+8%",
+                "url": "https://trends.google.com/trends/explore?q=메타버스%20마케팅",
+            },
+        ]
+        logger.info(f"트렌드 데이터 조회 성공: {len(trends_data)}개 항목")
+        return {"trends": trends_data}
+    except Exception as e:
+        logger.error(f"트렌드 데이터 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="트렌드 데이터를 불러오는데 실패했습니다.")
 
 
-@app.get("/sns/collect")
-async def collect_sns_data():
-    """SNS 데이터 수집 API"""
-    # 실제로는 data/pipelines/collect_sns_data.py와 연동
-    return {
-        "status": "success",
-        "collected_data": {
-            "twitter": random.randint(100, 1000),
-            "instagram": random.randint(500, 2000),
-            "linkedin": random.randint(50, 300),
-            "youtube": random.randint(200, 800),
-        },
-        "timestamp": datetime.now().isoformat(),
-    }
+@app.get("/goal")
+def goal():
+    """마케팅 목표 및 체크리스트"""
+    try:
+        return {
+            "daily_goal": "조회수 3만+ 리포스트 10+ 댓글 30+",
+            "weekly_goal": "팔로워 1000명 증가",
+            "monthly_goal": "브랜드 인지도 20% 향상",
+            "checklist": [
+                {"task": "오늘의 콘텐츠 업로드", "completed": False},
+                {"task": "댓글 및 DM 응답", "completed": False},
+                {"task": "경쟁사 분석", "completed": False},
+                {"task": "데이터 분석 및 리포트 작성", "completed": False},
+            ],
+        }
+    except Exception as e:
+        logger.error(f"목표 데이터 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="목표 데이터를 불러오는데 실패했습니다.")
 
 
-@app.get("/data/quality")
-async def check_data_quality():
-    """데이터 품질 검증 API"""
-    # 실제로는 data/pipelines/quality_checks.py와 연동
-    return {
-        "status": "success",
-        "quality_score": random.uniform(85.0, 98.0),
-        "issues_found": random.randint(0, 5),
-        "recommendations": [
-            "중복 데이터 정리 필요",
-            "누락된 해시태그 보완",
-            "이미지 품질 개선",
-        ],
-        "timestamp": datetime.now().isoformat(),
-    }
+@app.get("/ai/feedback")
+def ai_feedback():
+    """AI 마케팅 피드백"""
+    try:
+        return {
+            "suggestions": [
+                {
+                    "type": "콘텐츠 최적화",
+                    "message": "해시태그 #마케팅 #소셜미디어 #바이럴 추가 권장",
+                    "priority": "high",
+                },
+                {
+                    "type": "포스팅 시간",
+                    "message": "오후 7-9시 포스팅 시 참여도 30% 향상 예상",
+                    "priority": "medium",
+                },
+                {
+                    "type": "콘텐츠 유형",
+                    "message": "비디오 콘텐츠 비중을 60%로 증가 권장",
+                    "priority": "high",
+                },
+            ]
+        }
+    except Exception as e:
+        logger.error(f"AI 피드백 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="AI 피드백을 불러오는데 실패했습니다.")
 
 
-@app.get("/ai/preprocess")
-async def preprocess_text():
-    """텍스트 전처리 API"""
-    # 실제로는 ai-engine/preprocessing/text_processor.py와 연동
-    return {
-        "status": "success",
-        "processed_texts": random.randint(100, 500),
-        "cleaned_data": random.randint(80, 95),
-        "timestamp": datetime.now().isoformat(),
-    }
+@app.get("/pipeline/status")
+def pipeline_status():
+    """파이프라인 상태"""
+    try:
+        return {
+            "pipelines": [
+                {
+                    "name": "SNS 데이터 수집",
+                    "status": "completed",
+                    "lastRun": "2024-01-15T10:30:00Z",
+                    "duration": 120,
+                    "recordsProcessed": 1500,
+                },
+                {
+                    "name": "데이터 정제",
+                    "status": "running",
+                    "lastRun": "2024-01-15T10:35:00Z",
+                    "duration": 45,
+                    "recordsProcessed": 1200,
+                },
+                {
+                    "name": "AI 모델 학습",
+                    "status": "completed",
+                    "lastRun": "2024-01-15T09:00:00Z",
+                    "duration": 1800,
+                    "recordsProcessed": 800,
+                },
+                {
+                    "name": "품질 검증",
+                    "status": "completed",
+                    "lastRun": "2024-01-15T10:40:00Z",
+                    "duration": 30,
+                    "recordsProcessed": 1200,
+                },
+                {
+                    "name": "데이터 마트 구축",
+                    "status": "idle",
+                    "lastRun": "2024-01-15T09:30:00Z",
+                    "duration": 300,
+                    "recordsProcessed": 800,
+                },
+            ]
+        }
+    except Exception as e:
+        logger.error(f"파이프라인 상태 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="파이프라인 상태를 불러오는데 실패했습니다.")
 
 
-@app.get("/ai/train")
-async def train_models():
-    """AI 모델 훈련 API"""
-    # 실제로는 ai-engine/training/model_trainer.py와 연동
-    return {
-        "status": "success",
-        "models_trained": [
-            "trend_predictor",
-            "sentiment_analyzer",
-            "content_classifier",
-        ],
-        "accuracy": {
-            "trend_predictor": random.uniform(0.75, 0.92),
-            "sentiment_analyzer": random.uniform(0.80, 0.95),
-            "content_classifier": random.uniform(0.85, 0.98),
-        },
-        "timestamp": datetime.now().isoformat(),
-    }
+@app.get("/quality/metrics")
+def quality_metrics():
+    """품질 메트릭"""
+    try:
+        return {
+            "data_quality_score": 95.2,
+            "model_accuracy": 87.8,
+            "system_uptime": 99.9,
+            "response_time_avg": 245,
+            "error_rate": 0.1,
+            "user_satisfaction": 4.6,
+        }
+    except Exception as e:
+        logger.error(f"품질 메트릭 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="품질 메트릭을 불러오는데 실패했습니다.")
 
 
-@app.get("/health")
-async def health_check():
-    """헬스 체크"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "services": {"api": "running", "database": "connected", "ai_engine": "ready"},
-    }
+@app.get("/ai/performance")
+def ai_performance():
+    """AI 성능 지표"""
+    try:
+        return {
+            "model_performance": {
+                "accuracy": 0.92,
+                "precision": 0.89,
+                "recall": 0.91,
+                "f1_score": 0.90,
+            },
+            "inference_time": 0.15,
+            "training_time": 1800,
+            "last_updated": "2024-01-15T10:00:00Z",
+        }
+    except Exception as e:
+        logger.error(f"AI 성능 지표 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="AI 성능 지표를 불러오는데 실패했습니다.")
+
+
+@app.get("/quality/issues")
+def quality_issues():
+    """품질 이슈"""
+    try:
+        return {
+            "issues": [
+                {
+                    "id": 1,
+                    "type": "data_quality",
+                    "severity": "medium",
+                    "description": "일부 SNS 데이터 누락",
+                    "status": "in_progress",
+                    "created_at": "2024-01-15T09:30:00Z",
+                },
+                {
+                    "id": 2,
+                    "type": "model_performance",
+                    "severity": "low",
+                    "description": "트렌드 예측 정확도 개선 필요",
+                    "status": "resolved",
+                    "created_at": "2024-01-15T08:15:00Z",
+                },
+            ]
+        }
+    except Exception as e:
+        logger.error(f"품질 이슈 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="품질 이슈를 불러오는데 실패했습니다.")
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    """전역 예외 처리"""
+    logger.error(f"예상치 못한 오류 발생: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "서버 내부 오류가 발생했습니다."}
+    )
 
 
 if __name__ == "__main__":

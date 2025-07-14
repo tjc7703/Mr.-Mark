@@ -1,59 +1,50 @@
-# Mr. Mark Data/AI Pipeline Requirements (Python 3.13+ 최신 호환)
+# Mr. Mark Data/AI Pipeline Requirements (Python 3.11 호환)
 
-# Core Data Science
-torch==2.1.0
-scikit-learn>=1.4.0
-joblib>=1.3.2
-pandas>=2.2.0
-numpy>=1.26.0
-matplotlib>=3.8.0
-seaborn>=0.13.0
-plotly>=5.20.0
+# Core Data Science (안정적 버전)
+torch==2.1.0+cpu
+scikit-learn==1.4.0
+pandas==2.2.0
+numpy==1.26.0
+matplotlib==3.8.0
+seaborn==0.13.0
+plotly==5.20.0
 
-# Web Framework & API
-fastapi>=0.110.0
-uvicorn>=0.29.0
-python-multipart>=0.0.9
-aiohttp>=3.9.0
-requests>=2.32.0
+# Web Framework & API (통일된 버전)
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.20
+aiohttp==3.9.0
+requests==2.32.0
 
 # Data Collection & Processing
-beautifulsoup4>=4.12.3
-lxml>=5.2.0
-feedparser>=6.0.11
-python-dotenv>=1.0.1
+beautifulsoup4==4.12.3
+lxml==5.2.0
+feedparser==6.0.11
+python-dotenv==1.0.1
 
-# AI & NLP
-transformers>=4.40.0
-prophet>=1.1
-neuralprophet>=0.8.0
-textblob>=0.18.0
-nltk>=3.8.1
-
-# Dashboard & Visualization
-dash>=2.16.0
-dash-bootstrap-components>=1.5.0
-jupyter>=1.0.0
+# AI & NLP (핵심 기능만)
+transformers==4.40.0
+textblob==0.18.0
+nltk==3.8.1
 
 # Database & ORM
-sqlalchemy>=2.0.30
-alembic>=1.13.1
-psycopg2-binary>=2.9.9
+sqlalchemy==2.0.30
+alembic==1.13.1
+psycopg2-binary==2.9.9
 
 # Task Queue & Monitoring
-redis>=5.0.3
-celery>=5.4.0
-flower>=2.0.1
-prometheus-client>=0.20.0
+redis==5.0.3
+celery==5.4.0
+prometheus-client==0.20.0
 
 # Development & Testing
-pytest>=8.2.0
-black>=24.4.0
-flake8>=7.0.0
-mypy>=1.10.0
-pre-commit>=3.7.0
+pytest==8.2.0
+black==24.4.0
+flake8==7.0.0
+mypy==1.10.0
+pre-commit==3.7.0
 
 # Additional Utilities
-python-dateutil>=2.9.0
-pytz>=2024.1
-tqdm>=4.66.2 
+python-dateutil==2.9.0
+pytz==2024.1
+tqdm==4.66.2 

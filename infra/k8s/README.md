@@ -318,3 +318,142 @@ pnpm dev
 
 이 과정을 거치면 대부분의 tailwindcss 모듈 인식 문제는 해결됩니다.  
 실행 후에도 문제가 있으면, 추가 캡처와 함께 알려주세요!
+
+node_modules와 pnpm-lock.yaml을 정리하고 pnpm install까지 정상적으로 완료되었습니다!  
+이제 Docker 빌드 및 홈페이지 오픈을 위해 아래 명령어를 프로젝트 루트(아래 경로)에서 실행해 주세요:
+
+```sh
+cd "/Users/richardlee/Desktop/My Agent AI/Mr. Mark"
+docker compose build
+docker compose up -d
+```
+
+이후 브라우저에서  
+[http://localhost:3000](http://localhost:3000)  
+으로 접속하면 홈페이지를 확인하실 수 있습니다.
+
+만약 빌드나 실행 중 오류가 발생하면, 오류 메시지를 캡처해서 보여주시면 바로 진단해드리겠습니다!  
+정상적으로 홈페이지가 열리면, 추가적인 UI/UX 개선이나 기능 피드백도 도와드릴 수 있습니다.
+
+Docker 빌드에서  
+```
+failed to solve: process "/bin/sh -c corepack enable && corepack prepare pnpm@latest --activate && pnpm build" did not complete successfully: exit code: 1
+```
+오류가 발생했습니다.
+
+이 오류는 pnpm build 단계에서 발생한 것으로,  
+실제 원인은 build 로그의 앞부분(특히 "Failed to compile", "Module not found", "Error:" 등)이 중요합니다.
+
+---
+
+## 조치 방법
+
+1. **빌드 에러의 전체 로그(특히 pnpm build 직전~직후)를 캡처해서 보여주시면 원인을 정확히 진단할 수 있습니다.**
+2. 또는, 아래 명령어로 직접 빌드 로그를 확인해 주세요:
+```sh
+<code_block_to_apply_changes_from>
+```
+이렇게 하면 Docker 없이도 동일한 오류가 발생할 경우, 원인을 바로 알 수 있습니다.
+
+---
+
+### 자주 발생하는 원인
+- node_modules, lockfile, tailwindcss 등 의존성 문제
+- next.config, postcss.config, tailwind.config 등 설정 파일 문제
+- 빌드 시 환경 변수 누락
+
+---
+
+위 명령어 실행 후 발생하는 전체 오류 메시지를 캡처해 주시면  
+정확한 원인 분석과 해결책을 바로 안내해드릴 수 있습니다!
+
+---
+
+현재 Docker 빌드 및 로컬 빌드에서  
+```
+Module not found: Can't resolve 'tailwindcss'
+```
+오류가 반복적으로 발생하고 있습니다.
+
+웹 공식 문서 및 커뮤니티 사례를 종합 분석하여, 근본적인 원인과 해결책을 아래와 같이 정리합니다.
+
+---
+
+## 원인 분석
+
+1. **tailwindcss가 devDependencies에만 설치되어 있고, Docker 빌드 시 NODE_ENV=production 환경에서 devDependencies가 설치되지 않음**
+   - pnpm, npm, yarn 모두 production 모드에서는 devDependencies를 설치하지 않습니다.
+   - Next.js 빌드 시 tailwindcss가 반드시 필요하므로, devDependencies가 아닌 dependencies에 있어야 합니다.
+
+2. **pnpm install이 Dockerfile에서 --prod 옵션 없이 실행되어도, 일부 환경에서는 NODE_ENV=production이 자동 적용되어 devDependencies가 무시될 수 있음**
+   - 특히 멀티스테이지 빌드, CI/CD, 일부 Docker 환경에서 자주 발생
+
+3. **tailwindcss가 실제로 node_modules에 존재하지 않거나, lockfile이 꼬여 있을 때**
+
+---
+
+## 공식/커뮤니티 권장 해결책
+
+### 1. tailwindcss를 dependencies로 이동
+
+tailwindcss, postcss, autoprefixer를 devDependencies가 아닌 dependencies에 추가하세요.
+
+```sh
+pnpm add tailwindcss postcss autoprefixer
+```
+(이미 devDependencies에 있다면, dependencies로 옮기면 됩니다.)
+
+### 2. Dockerfile에서 NODE_ENV=production을 명시적으로 제거
+
+Dockerfile에서 빌드/설치 단계에 NODE_ENV=production이 암시적으로 적용되지 않도록 주의하세요.
+
+### 3. node_modules, lockfile, 캐시 완전 삭제 후 재설치
+
+```sh
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+
+### 4. 빌드 테스트
+
+로컬에서 `pnpm build`가 정상 동작하는지 반드시 확인 후, Docker 빌드를 재시도하세요.
+
+---
+
+## 공식 문서 참고
+
+- [Tailwind CSS 공식 설치 가이드](https://tailwindcss.com/docs/installation)
+- [Next.js Tailwind CSS 통합 가이드](https://nextjs.org/docs/pages/building-your-application/styling/tailwind-css)
+- [Docker에서 Tailwind CSS 사용시 주의사항](https://github.com/vercel/next.js/discussions/35745)
+
+---
+
+## 최종 권장 조치
+
+1. 아래 명령어로 tailwindcss를 dependencies로 이동:
+   ```sh
+   pnpm add tailwindcss postcss autoprefixer
+   ```
+2. node_modules, pnpm-lock.yaml 삭제 후 재설치:
+   ```sh
+   rm -rf node_modules pnpm-lock.yaml
+   pnpm install
+   ```
+3. 로컬에서 빌드 테스트:
+   ```sh
+   pnpm build
+   ```
+4. Docker 빌드 재시도:
+   ```sh
+   docker compose build
+   docker compose up -d
+   ```
+
+---
+
+이 과정을 따르면 tailwindcss 모듈 인식 문제는 대부분 해결됩니다.  
+추가적으로, 빌드 로그에서 다른 오류가 발생하면 그 부분을 캡처해주시면 더 정확히 진단해드릴 수 있습니다.
+
+참고:  
+- [Tailwind CSS 공식 설치 가이드](https://tailwindcss.com/docs/installation)
+- [Next.js Tailwind CSS 통합 가이드](https://nextjs.org/docs/pages/building-your-application/styling/tailwind-css)

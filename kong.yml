@@ -1,0 +1,53 @@
+_format_version: "2.1"
+
+services:
+  - name: backend-service
+    url: http://backend:8001
+    routes:
+      - name: backend-route
+        paths:
+          - /api/backend
+        strip_path: true
+    plugins:
+      - name: cors
+        config:
+          origins: ["*"]
+          methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+          headers: ["Content-Type", "Authorization"]
+          exposed_headers: ["X-Total-Count"]
+          credentials: true
+          max_age: 3600
+
+  - name: ai-engine-service
+    url: http://ai-engine:9000
+    routes:
+      - name: ai-engine-route
+        paths:
+          - /api/ai
+        strip_path: true
+    plugins:
+      - name: cors
+        config:
+          origins: ["*"]
+          methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+          headers: ["Content-Type", "Authorization"]
+          exposed_headers: ["X-Total-Count"]
+          credentials: true
+          max_age: 3600
+
+  - name: frontend-service
+    url: http://frontend:3000
+    routes:
+      - name: frontend-route
+        paths:
+          - /
+        strip_path: false
+    plugins:
+      - name: cors
+        config:
+          origins: ["*"]
+          methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+          headers: ["Content-Type", "Authorization"]
+          exposed_headers: ["X-Total-Count"]
+          credentials: true
+          max_age: 3600 
