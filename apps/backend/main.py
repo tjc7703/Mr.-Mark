@@ -98,102 +98,70 @@ def metrics():
     }
 
 
-@app.get("/feed/today")
+@app.get("/api/feed/today")
 def today_feed():
     """실시간 마케팅 뉴스 피드"""
     try:
         news_data = [
             {
-                "id": 1,
                 "title": "2024년 디지털 마케팅 트렌드: AI와 개인화가 주도",
-                "summary": "AI 기반 개인화 마케팅이 2024년의 핵심 트렌드로 부상하고 있습니다.",
+                "content": "AI 기반 개인화 마케팅이 2024년의 핵심 트렌드로 부상하고 있습니다.",
                 "source": "마케팅 인사이트",
                 "url": "https://www.marketinginsight.co.kr/2024-digital-marketing-trends",
-                "published_at": "2024-01-15T10:30:00Z",
-                "category": "트렌드",
+                "publishedAt": "2024-01-15T10:30:00Z",
             },
             {
-                "id": 2,
                 "title": "소셜미디어 마케팅 성공 사례: 인스타그램 릴스 활용법",
-                "summary": "인스타그램 릴스를 활용한 브랜드 마케팅 성공 사례를 소개합니다.",
+                "content": "인스타그램 릴스를 활용한 브랜드 마케팅 성공 사례를 소개합니다.",
                 "source": "소셜마케팅 뉴스",
                 "url": "https://socialmarketing.news/instagram-reels-success-cases",
-                "published_at": "2024-01-15T09:15:00Z",
-                "category": "소셜미디어",
+                "publishedAt": "2024-01-15T09:15:00Z",
             },
             {
-                "id": 3,
                 "title": "바이럴 마케팅 전략: 틱톡 챌린지 활용 가이드",
-                "summary": "틱톡 챌린지를 활용한 바이럴 마케팅 전략과 실행 방법을 알아봅니다.",
+                "content": "틱톡 챌린지를 활용한 바이럴 마케팅 전략과 실행 방법을 알아봅니다.",
                 "source": "바이럴 마케팅 가이드",
                 "url": "https://viralmarketing.guide/tiktok-challenge-strategy",
-                "published_at": "2024-01-15T08:45:00Z",
-                "category": "바이럴마케팅",
+                "publishedAt": "2024-01-15T08:45:00Z",
             },
             {
-                "id": 4,
                 "title": "콘텐츠 마케팅 ROI 측정 방법론",
-                "summary": "콘텐츠 마케팅의 투자 대비 수익률을 정확히 측정하는 방법을 제시합니다.",
+                "content": "콘텐츠 마케팅의 투자 대비 수익률을 정확히 측정하는 방법을 제시합니다.",
                 "source": "콘텐츠 마케팅 연구소",
                 "url": "https://contentmarketing.lab/roi-measurement-guide",
-                "published_at": "2024-01-15T07:30:00Z",
-                "category": "콘텐츠마케팅",
+                "publishedAt": "2024-01-15T07:30:00Z",
             },
             {
-                "id": 5,
                 "title": "이메일 마케팅 자동화: 고객 생애주기별 전략",
-                "summary": "고객의 생애주기에 따른 이메일 마케팅 자동화 전략을 구현해보세요.",
+                "content": "고객의 생애주기에 따른 이메일 마케팅 자동화 전략을 구현해보세요.",
                 "source": "이메일 마케팅 전문가",
                 "url": "https://emailmarketing.pro/lifecycle-automation",
-                "published_at": "2024-01-15T06:20:00Z",
-                "category": "이메일마케팅",
+                "publishedAt": "2024-01-15T06:20:00Z",
             },
         ]
         logger.info(f"피드 데이터 조회 성공: {len(news_data)}개 항목")
-        return {"news": news_data}
+        return {"news": news_data, "timestamp": datetime.now().isoformat()}
     except Exception as e:
         logger.error(f"피드 데이터 조회 실패: {str(e)}")
         raise HTTPException(status_code=500, detail="피드 데이터를 불러오는데 실패했습니다.")
 
 
-@app.get("/trend")
+@app.get("/api/trends")
 def trend():
     """실시간 마케팅 트렌드"""
     try:
         trends_data = [
-            {
-                "keyword": "AI 마케팅 자동화",
-                "volume": 8500,
-                "growth": "+15%",
-                "url": "https://trends.google.com/trends/explore?q=AI%20마케팅%20자동화",
-            },
-            {
-                "keyword": "틱톡 마케팅",
-                "volume": 7200,
-                "growth": "+23%",
-                "url": "https://trends.google.com/trends/explore?q=틱톡%20마케팅",
-            },
-            {
-                "keyword": "바이럴 콘텐츠",
-                "volume": 6800,
-                "growth": "+18%",
-                "url": "https://trends.google.com/trends/explore?q=바이럴%20콘텐츠",
-            },
-            {
-                "keyword": "개인화 마케팅",
-                "volume": 6100,
-                "growth": "+12%",
-                "url": "https://trends.google.com/trends/explore?q=개인화%20마케팅",
-            },
-            {
-                "keyword": "메타버스 마케팅",
-                "volume": 5400,
-                "growth": "+8%",
-                "url": "https://trends.google.com/trends/explore?q=메타버스%20마케팅",
-            },
+            "AI 마케팅 자동화",
+            "틱톡 마케팅",
+            "바이럴 콘텐츠",
+            "개인화 마케팅",
+            "메타버스 마케팅",
+            "인플루언서 마케팅",
+            "데이터 기반 마케팅",
+            "퍼스널 브랜딩"
         ]
         logger.info(f"트렌드 데이터 조회 성공: {len(trends_data)}개 항목")
-        return {"trends": trends_data}
+        return {"trends": trends_data, "timestamp": datetime.now().isoformat()}
     except Exception as e:
         logger.error(f"트렌드 데이터 조회 실패: {str(e)}")
         raise HTTPException(status_code=500, detail="트렌드 데이터를 불러오는데 실패했습니다.")
@@ -219,32 +187,29 @@ def goal():
         raise HTTPException(status_code=500, detail="목표 데이터를 불러오는데 실패했습니다.")
 
 
-@app.get("/ai/feedback")
+@app.get("/api/ai/feedback")
 def ai_feedback():
-    """AI 마케팅 피드백"""
+    """AI 피드백 및 인사이트"""
     try:
-        return {
-            "suggestions": [
-                {
-                    "type": "콘텐츠 최적화",
-                    "message": "해시태그 #마케팅 #소셜미디어 #바이럴 추가 권장",
-                    "priority": "high",
-                },
-                {
-                    "type": "포스팅 시간",
-                    "message": "오후 7-9시 포스팅 시 참여도 30% 향상 예상",
-                    "priority": "medium",
-                },
-                {
-                    "type": "콘텐츠 유형",
-                    "message": "비디오 콘텐츠 비중을 60%로 증가 권장",
-                    "priority": "high",
-                },
+        feedback_data = {
+            "insights": [
+                "고객 참여도가 30% 증가했습니다",
+                "AI 추천 시스템이 전환율을 25% 향상시켰습니다",
+                "개인화된 콘텐츠가 클릭률을 40% 개선했습니다",
+                "실시간 분석으로 마케팅 효율성이 35% 향상되었습니다"
+            ],
+            "recommendations": [
+                "더 많은 개인화 콘텐츠를 생성하세요",
+                "A/B 테스트를 확대하여 최적화하세요",
+                "고객 피드백 수집을 강화하세요",
+                "AI 모델을 정기적으로 업데이트하세요"
             ]
         }
+        logger.info("AI 피드백 데이터 조회 성공")
+        return {**feedback_data, "timestamp": datetime.now().isoformat()}
     except Exception as e:
-        logger.error(f"AI 피드백 조회 실패: {str(e)}")
-        raise HTTPException(status_code=500, detail="AI 피드백을 불러오는데 실패했습니다.")
+        logger.error(f"AI 피드백 데이터 조회 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="AI 피드백 데이터를 불러오는데 실패했습니다.")
 
 
 @app.get("/pipeline/status")
