@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 FROM base AS runtime
 WORKDIR /app
 COPY --from=deps /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=deps /usr/local/bin /usr/local/bin
 COPY . .
 
 # 헬스체크 추가
