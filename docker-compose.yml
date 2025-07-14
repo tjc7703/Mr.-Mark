@@ -2,21 +2,15 @@ version: "3.9"
 services:
   # API Gateway
   gateway:
-    image: kong:3.4
+    image: nginx:alpine
     ports:
-      - "8000:8000"
-      - "8443:8443"
-    environment:
-      KONG_DATABASE: "off"
-      KONG_PROXY_ACCESS_LOG: /dev/stdout
-      KONG_ADMIN_ACCESS_LOG: /dev/stdout
-      KONG_PROXY_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
-      KONG_ADMIN_GUI_URL: http://localhost:8002
+      - "8000:80"
     volumes:
-      - ./kong.yml:/etc/kong/kong.yml
-    command: kong start
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+      - ai-engine
     restart: unless-stopped
 
   # Frontend (Next.js 14)
