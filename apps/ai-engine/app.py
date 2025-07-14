@@ -24,6 +24,19 @@ def health_check():
     """헬스체크 엔드포인트"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
+@app.get("/metrics")
+def metrics():
+    """메트릭 엔드포인트"""
+    return {
+        "predictions_total": 0,
+        "predictions_success": 0,
+        "predictions_error": 0,
+        "analysis_total": 0,
+        "analysis_success": 0,
+        "analysis_error": 0,
+        "uptime_seconds": 0
+    }
+
 @app.get("/")
 def read_root():
     return {"msg": "Mr. Mark AI Engine", "version": "1.0.0"}

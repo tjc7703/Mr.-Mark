@@ -6,7 +6,8 @@ services:
     routes:
       - name: backend-route
         paths:
-          - /api/backend
+          - /api/backend/health
+          - /api/backend/
         strip_path: true
     plugins:
       - name: cors
@@ -23,7 +24,7 @@ services:
     routes:
       - name: ai-engine-route
         paths:
-          - /api/ai
+          - /api/ai/
         strip_path: true
     plugins:
       - name: cors

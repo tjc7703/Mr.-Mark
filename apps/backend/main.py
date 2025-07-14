@@ -75,6 +75,29 @@ def read_root():
     return {"msg": "Mr. Mark Backend API", "version": "1.0.0"}
 
 
+@app.get("/health")
+def health_check():
+    """헬스체크 엔드포인트"""
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
+@app.get("/api/backend/health")
+def kong_health_check():
+    """Kong 경유 헬스체크 엔드포인트"""
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
+@app.get("/metrics")
+def metrics():
+    """메트릭 엔드포인트"""
+    return {
+        "requests_total": 0,
+        "requests_success": 0,
+        "requests_error": 0,
+        "uptime_seconds": 0
+    }
+
+
 @app.get("/feed/today")
 def today_feed():
     """실시간 마케팅 뉴스 피드"""
