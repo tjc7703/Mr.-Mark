@@ -217,3 +217,104 @@ CMD ["node", "dist/index.js"]
 ---
 
 추가적으로 궁금한 점이나, 프론트엔드 lockfile 재생성까지 자동화가 필요하다면 말씀해 주세요! 
+
+현재 환경에서는 직접적으로 웹사이트를 띄워서 보여드릴 수는 없지만,  
+로컬에서 홈페이지(프론트엔드)를 확인하는 방법을 안내해드릴 수 있습니다.
+
+---
+
+### 1. Docker 컨테이너로 실행 (권장)
+아래 명령어를 프로젝트 루트에서 실행하세요:
+```sh
+docker compose up -d
+```
+이후 브라우저에서  
+[http://localhost:3000](http://localhost:3000)  
+으로 접속하면 홈페이지를 확인할 수 있습니다.
+
+---
+
+### 2. 직접 개발 서버로 실행
+프론트엔드 디렉토리로 이동 후 아래 명령어를 실행하세요:
+```sh
+cd "/Users/richardlee/Desktop/My Agent AI/Mr. Mark"
+cd apps/frontend
+pnpm install
+pnpm dev
+```
+
+이제는 --turbopack 옵션 오류 없이 Next.js 개발 서버가 정상적으로 실행될 것입니다.  
+실행 후 [http://localhost:3000](http://localhost:3000)에서 홈페이지를 확인하실 수 있습니다.
+
+만약 추가적인 오류가 발생하면, 오류 메시지를 캡처해서 보여주시면 바로 진단해드리겠습니다!
+
+---
+
+## 해결 방법
+
+아래 명령어를 프론트엔드 디렉토리(예: apps/frontend)에서 실행해 Tailwind CSS 및 관련 패키지를 설치하세요:
+
+```sh
+pnpm add -D tailwindcss postcss autoprefixer
+```
+
+설치 후, 개발 서버를 다시 실행하면 정상적으로 홈페이지가 표시될 것입니다.
+
+---
+
+### 추가 안내
+이미 `postcss.config.mjs`와 `tailwind.config.js`(또는 mjs)가 프로젝트에 포함되어 있으므로,  
+설치만 하면 바로 동작합니다.
+
+설치 후에도 문제가 있으면 추가 오류 메시지를 캡처해 주세요!  
+설치 및 실행이 잘 되면, UI/UX 개선이나 추가 피드백도 도와드릴 수 있습니다.
+
+Tailwind CSS, PostCSS, Autoprefixer가 정상적으로 설치되었습니다!  
+경고(WARN)는 구동에 큰 영향을 주지 않는 하위 의존성 관련 알림이므로 무시하셔도 됩니다.
+
+---
+
+이제 아래 명령어로 개발 서버를 실행해 주세요:
+
+```sh
+pnpm dev
+```
+
+실행 후 브라우저에서  
+[http://localhost:3000](http://localhost:3000)  
+으로 접속하면 홈페이지가 정상적으로 표시될 것입니다.
+
+문제가 계속 발생하면 오류 메시지를 캡처해서 보여주세요.  
+정상적으로 화면이 나오면, 추가적인 UI/UX 개선이나 기능 피드백도 도와드릴 수 있습니다!
+
+---
+
+tailwindcss를 설치했음에도 불구하고 여전히 "Module not found: Can't resolve 'tailwindcss'" 오류가 발생하는 것은  
+설치가 devDependencies로 잘 되었지만, 실제로는 node_modules에 tailwindcss가 없거나,  
+pnpm의 워크스페이스/캐시 문제, 또는 lockfile이 꼬였을 때 자주 발생합니다.
+
+---
+
+## 해결 방법
+
+1. **node_modules와 lockfile 정리 후 재설치**
+```sh
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+2. 그 후 다시 실행
+```sh
+pnpm dev
+```
+
+---
+
+위 과정을 apps/frontend 디렉토리에서 실행해 주세요.
+
+만약 그래도 문제가 해결되지 않으면,  
+- tailwindcss가 package.json의 devDependencies에 실제로 추가되어 있는지 확인  
+- postcss.config.mjs, tailwind.config.js(mjs) 파일이 정상적으로 존재하는지 확인  
+- pnpm install 로그에 tailwindcss가 실제로 설치되는지 확인
+
+이 과정을 거치면 대부분의 tailwindcss 모듈 인식 문제는 해결됩니다.  
+실행 후에도 문제가 있으면, 추가 캡처와 함께 알려주세요!
