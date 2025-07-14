@@ -1,0 +1,25 @@
+name: Problem Solution Dataset Check
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+jobs:
+  check-problems:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: 문제-해결 데이터셋 기반 자동 진단 (샘플)
+        run: |
+          echo '🔎 문제-해결 데이터셋 기반 자동 진단 시작'
+          if grep -q 'public/' .gitignore; then
+            echo '⚠️ public/ 정적파일 누락 위험: Dockerfile COPY, 빌드 스크립트 확인 필요!'
+          fi
+          if ! grep -q 'openapi' README.md; then
+            echo '⚠️ API 명세(OpenAPI) 문서화 누락 위험!'
+          fi
+          if ! grep -q 'CORS' README.md; then
+            echo '⚠️ CORS 정책/미들웨어 적용 여부 확인 필요!'
+          fi
+          echo '✅ 문제-해결 데이터셋 기반 자동 진단 완료' 

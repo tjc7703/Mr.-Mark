@@ -1,0 +1,13 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npm run lint || exit 1
+npm run type-check || exit 1
+if [ ! -f .env ]; then
+  echo '⚠️ .env 파일 누락!'
+  exit 1
+fi
+if ! grep -q 'public/' .gitignore; then
+  echo '⚠️ public/ 정적파일 누락 위험!'
+  exit 1
+fi 

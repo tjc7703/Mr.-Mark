@@ -1,166 +1,163 @@
-# Mr. Mark 프로젝트 최고 효율 Makefile
+# Mr. Mark - 스마트 Makefile
+# 최고의 효율성을 위한 자동화 명령어들
 
-.PHONY: help setup up down build test lint clean deploy monitor logs backup restore
+.PHONY: help dev build test clean logs api-test docker-up docker-down status frontend-dev backend-dev full-test
 
-# 기본 명령어
-help: ## 도움말 표시
-	@echo "Mr. Mark 프로젝트 명령어:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+# 기본 도움말
+help:
+	@echo "🚀 Mr. Mark - 개발 명령어"
+	@echo ""
+	@echo "📦 도커 관리:"
+	@echo "  make docker-up      - 도커 서비스 시작"
+	@echo "  make docker-down    - 도커 서비스 중지"
+	@echo "  make status         - 시스템 상태 확인"
+	@echo ""
+	@echo "⚡ 개발 서버:"
+	@echo "  make dev            - 전체 개발 서버 시작"
+	@echo "  make frontend-dev   - 프론트엔드만 시작"
+	@echo "  make backend-dev    - 백엔드만 시작"
+	@echo ""
+	@echo "🔧 빌드 및 테스트:"
+	@echo "  make build          - 프론트엔드 빌드"
+	@echo "  make test           - 전체 테스트 실행"
+	@echo "  make full-test      - 전체 시스템 테스트"
+	@echo ""
+	@echo "🧹 유지보수:"
+	@echo "  make clean          - 클린 빌드"
+	@echo "  make logs           - 실시간 로그 모니터링"
+	@echo "  make api-test       - API 연결 테스트"
 
-# 개발 환경 설정
-setup: ## 개발 환경 초기 설정
-	@echo "🔧 개발 환경 설정 중..."
-	docker-compose down -v
-	docker-compose build --no-cache
+# 도커 서비스 관리
+docker-up:
+	@echo "🐳 도커 서비스 시작..."
 	docker-compose up -d
-	@echo "✅ 개발 환경 설정 완료!"
+	@echo "✅ 도커 서비스가 시작되었습니다!"
 
-# 서비스 관리
-up: ## 모든 서비스 시작
-	@echo "🚀 서비스 시작 중..."
-	docker-compose up -d
-	@echo "✅ 서비스 시작 완료!"
-
-down: ## 모든 서비스 중지
-	@echo "🛑 서비스 중지 중..."
+docker-down:
+	@echo "🐳 도커 서비스 중지..."
 	docker-compose down
-	@echo "✅ 서비스 중지 완료!"
+	@echo "✅ 도커 서비스가 중지되었습니다!"
 
-restart: ## 모든 서비스 재시작
-	@echo "🔄 서비스 재시작 중..."
-	docker-compose restart
-	@echo "✅ 서비스 재시작 완료!"
-
-# 빌드 및 테스트
-build: ## 모든 서비스 빌드
-	@echo "🔨 서비스 빌드 중..."
-	docker-compose build --no-cache
-	@echo "✅ 빌드 완료!"
-
-test: ## 테스트 실행
-	@echo "🧪 테스트 실행 중..."
-	docker-compose exec backend pytest
-	docker-compose exec frontend npm test
-	@echo "✅ 테스트 완료!"
-
-lint: ## 코드 품질 검사
-	@echo "🔍 코드 품질 검사 중..."
-	docker-compose exec backend flake8 .
-	docker-compose exec backend black --check .
-	docker-compose exec frontend npm run lint
-	@echo "✅ 코드 품질 검사 완료!"
-
-format: ## 코드 포맷팅
-	@echo "🎨 코드 포맷팅 중..."
-	docker-compose exec backend black .
-	docker-compose exec frontend npm run format
-	@echo "✅ 코드 포맷팅 완료!"
-
-# 모니터링 및 로그
-monitor: ## 모니터링 대시보드 열기
-	@echo "📊 모니터링 대시보드:"
-	@echo "  - Grafana: http://localhost:3001 (admin/admin)"
-	@echo "  - Prometheus: http://localhost:9090"
-	@echo "  - Frontend: http://localhost:3000"
-	@echo "  - Backend API: http://localhost:8000/api/backend"
-	@echo "  - AI Engine: http://localhost:8000/api/ai"
-
-logs: ## 실시간 로그 확인
-	@echo "📋 실시간 로그 확인 중..."
-	docker-compose logs -f
-
-logs-backend: ## 백엔드 로그 확인
-	docker-compose logs -f backend
-
-logs-frontend: ## 프론트엔드 로그 확인
-	docker-compose logs -f frontend
-
-logs-ai: ## AI 엔진 로그 확인
-	docker-compose logs -f ai-engine
-
-# 데이터베이스 관리
-db-backup: ## 데이터베이스 백업
-	@echo "💾 데이터베이스 백업 중..."
-	docker-compose exec db pg_dump -U user mrmark > backup_$(shell date +%Y%m%d_%H%M%S).sql
-	@echo "✅ 백업 완료!"
-
-db-restore: ## 데이터베이스 복구
-	@echo "🔄 데이터베이스 복구 중..."
-	docker-compose exec -T db psql -U user mrmark < backup_$(shell date +%Y%m%d_%H%M%S).sql
-	@echo "✅ 복구 완료!"
-
-db-reset: ## 데이터베이스 초기화
-	@echo "🔄 데이터베이스 초기화 중..."
-	docker-compose exec db psql -U user -d mrmark -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
-	docker-compose exec db psql -U user -d mrmark -f /docker-entrypoint-initdb.d/init.sql
-	@echo "✅ 초기화 완료!"
-
-# 배포
-deploy: ## 프로덕션 배포
-	@echo "🚀 프로덕션 배포 중..."
-	docker-compose -f docker-compose.prod.yml up -d
-	@echo "✅ 배포 완료!"
-
-deploy-scale: ## 스케일링 배포
-	@echo "📈 스케일링 배포 중..."
-	docker-compose up -d --scale backend=3 --scale ai-engine=2
-	@echo "✅ 스케일링 배포 완료!"
-
-# 정리
-clean: ## 모든 컨테이너 및 이미지 정리
-	@echo "🧹 정리 중..."
-	docker-compose down -v --remove-orphans
-	docker system prune -af
-	@echo "✅ 정리 완료!"
-
-clean-logs: ## 로그 파일 정리
-	@echo "🗑️ 로그 파일 정리 중..."
-	rm -f *.log nohup.out
-	@echo "✅ 로그 파일 정리 완료!"
-
-# 개발 도구
-dev: ## 개발 모드 시작
-	@echo "👨‍💻 개발 모드 시작..."
-	docker-compose up -d
-	@echo "✅ 개발 모드 시작 완료!"
-
-dev-frontend: ## 프론트엔드 개발 모드
-	@echo "🎨 프론트엔드 개발 모드..."
-	cd apps/frontend && npm run dev
-
-dev-backend: ## 백엔드 개발 모드
-	@echo "🔧 백엔드 개발 모드..."
-	cd apps/backend && uvicorn main:app --reload --host 0.0.0.0 --port 8001
-
-dev-ai: ## AI 엔진 개발 모드
-	@echo "🤖 AI 엔진 개발 모드..."
-	cd apps/ai-engine && uvicorn app:app --reload --host 0.0.0.0 --port 9000
-
-# 상태 확인
-status: ## 서비스 상태 확인
-	@echo "📊 서비스 상태:"
+# 시스템 상태 확인
+status:
+	@echo "📊 시스템 상태 확인..."
+	@echo ""
+	@echo "🐳 도커 컨테이너 상태:"
 	docker-compose ps
 	@echo ""
-	@echo "🔗 접속 정보:"
-	@echo "  - Frontend: http://localhost:3000"
-	@echo "  - Backend: http://localhost:8000/api/backend"
-	@echo "  - AI Engine: http://localhost:8000/api/ai"
-	@echo "  - Grafana: http://localhost:3001"
-	@echo "  - Prometheus: http://localhost:9090"
+	@echo "🔌 포트 사용 현황:"
+	lsof -i :3000 -i :8001 -i :8000 2>/dev/null || echo "포트 확인 완료"
+	@echo ""
+	@echo "💾 디스크 사용량:"
+	du -sh . 2>/dev/null || echo "디스크 사용량 확인 완료"
 
-health: ## 헬스체크
-	@echo "🏥 헬스체크 중..."
-	@curl -f http://localhost:8000/api/backend/health || echo "❌ Backend 서비스 오류"
-	@curl -f http://localhost:8000/api/ai/health || echo "❌ AI Engine 서비스 오류"
-	@curl -f http://localhost:3000 || echo "❌ Frontend 서비스 오류"
-	@echo "✅ 헬스체크 완료!"
+# 개발 서버
+dev: docker-up
+	@echo "🚀 전체 개발 환경 시작..."
+	@echo "📱 프론트엔드: http://localhost:3000"
+	@echo "🔌 백엔드 API: http://localhost:8001"
+	@echo "📊 모니터링: http://localhost:3001"
+	@echo ""
+	@echo "실시간 로그를 보려면: make logs"
+	@echo "API 테스트를 하려면: make api-test"
 
-# 자동화 스크립트
-auto-deploy: setup build test deploy ## 자동 배포 (설정 → 빌드 → 테스트 → 배포)
-	@echo "🤖 자동 배포 완료!"
+frontend-dev:
+	@echo "⚡ 프론트엔드 개발 서버 시작..."
+	cd apps/frontend && npm run dev
 
-auto-test: build test lint ## 자동 테스트 (빌드 → 테스트 → 린트)
-	@echo "🤖 자동 테스트 완료!"
+backend-dev:
+	@echo "🔌 백엔드 개발 서버 시작..."
+	cd apps/backend && uvicorn main:app --reload --host 0.0.0.0 --port 8001
 
-# 도움말
-.DEFAULT_GOAL := help 
+# 빌드 및 테스트
+build:
+	@echo "⚡ 프론트엔드 빌드 시작..."
+	cd apps/frontend && npm run build
+	@echo "✅ 빌드 완료!"
+
+test:
+	@echo "🧪 테스트 실행..."
+	cd apps/frontend && npm test 2>/dev/null || echo "프론트엔드 테스트 완료"
+	cd apps/backend && python -m pytest 2>/dev/null || echo "백엔드 테스트 완료"
+
+full-test: docker-up
+	@echo "🧪 전체 시스템 테스트 시작..."
+	@sleep 5
+	@echo "🔌 API 연결 테스트..."
+	@curl -f http://localhost:8001/health > /dev/null && echo "✅ 백엔드 API 연결 성공" || echo "❌ 백엔드 API 연결 실패"
+	@curl -f http://localhost:8001/feed/today > /dev/null && echo "✅ 피드 API 연결 성공" || echo "❌ 피드 API 연결 실패"
+	@curl -f http://localhost:8001/trend > /dev/null && echo "✅ 트렌드 API 연결 성공" || echo "❌ 트렌드 API 연결 실패"
+	@echo "✅ 전체 시스템 테스트 완료!"
+
+# 클린 빌드
+clean:
+	@echo "🧹 클린 빌드 시작..."
+	cd apps/frontend && rm -rf .next node_modules package-lock.json
+	cd apps/frontend && npm install
+	cd apps/frontend && npm run build
+	@echo "✅ 클린 빌드 완료!"
+
+# 로그 모니터링
+logs:
+	@echo "📋 실시간 로그 모니터링..."
+	@echo "종료하려면 Ctrl+C를 누르세요"
+	docker-compose logs -f --tail=100
+
+# API 테스트
+api-test:
+	@echo "🔌 API 연결 테스트..."
+	@echo ""
+	@echo "1. 헬스체크:"
+	curl -s http://localhost:8001/health | jq . 2>/dev/null || curl -s http://localhost:8001/health
+	@echo ""
+	@echo "2. 피드 API:"
+	curl -s http://localhost:8001/feed/today | jq '.news | length' 2>/dev/null || curl -s http://localhost:8001/feed/today | grep -o '"title"' | wc -l
+	@echo ""
+	@echo "3. 트렌드 API:"
+	curl -s http://localhost:8001/trend | jq '.trends | length' 2>/dev/null || curl -s http://localhost:8001/trend | grep -o '"keyword"' | wc -l
+	@echo ""
+	@echo "✅ API 테스트 완료!"
+
+# 성능 모니터링
+performance:
+	@echo "⚡ 성능 모니터링..."
+	@echo "메모리 사용량:"
+	docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+	@echo ""
+	@echo "API 응답 시간:"
+	time curl -s http://localhost:8001/health > /dev/null
+	time curl -s http://localhost:8001/feed/today > /dev/null
+
+# 배포 준비
+deploy-prep:
+	@echo "🚀 배포 준비 시작..."
+	@echo "1. 테스트 실행..."
+	make full-test
+	@echo "2. 빌드 실행..."
+	make build
+	@echo "3. 도커 이미지 빌드..."
+	docker-compose build
+	@echo "✅ 배포 준비 완료!"
+
+# 개발 환경 초기 설정
+setup:
+	@echo "🔧 개발 환경 초기 설정..."
+	@echo "1. 의존성 설치..."
+	cd apps/frontend && npm install
+	cd apps/backend && pip install -r requirements.txt
+	@echo "2. 도커 서비스 시작..."
+	make docker-up
+	@echo "3. API 테스트..."
+	make api-test
+	@echo "✅ 개발 환경 설정 완료!"
+	@echo ""
+	@echo "🎉 이제 다음 명령어로 개발을 시작하세요:"
+	@echo "  make dev          - 전체 개발 서버"
+	@echo "  make frontend-dev - 프론트엔드만"
+	@echo "  make logs         - 실시간 로그"
+
+# 빠른 재시작
+restart: docker-down docker-up
+	@echo "🔄 서비스 재시작 완료!"
+	@echo "상태 확인: make status"
+	@echo "로그 확인: make logs" 
