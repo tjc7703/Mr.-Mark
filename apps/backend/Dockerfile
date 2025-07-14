@@ -1,22 +1,23 @@
-FROM node:20 AS check
-WORKDIR /app
-RUN apt-get update && apt-get install -y curl \
-  && curl -I https://registry.npmjs.org || (echo "NPM 서버 장애" && exit 1)
+FROM python:3.11-slim
 
-FROM node:20 AS deps
 WORKDIR /app
-COPY pnpm-lock.yaml .
-RUN corepack enable && corepack prepare pnpm@latest --activate \
-  && pnpm config set registry https://registry.npmmirror.com \
-  && pnpm install --frozen-lockfile
 
-FROM node:20 AS builder
-WORKDIR /app
+# 시스템 의존성 설치
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 네트워크 체크
+RUN curl -I https://pypi.org || (echo "PyPI 서버 장애" && exit 1)
+
+# Python 의존성 설치
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# 애플리케이션 코드 복사
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
-RUN pnpm build
 
-FROM node:20 AS runner
-WORKDIR /app
-COPY --from=builder /app/dist ./dist
-CMD ["node", "dist/index.js"]
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

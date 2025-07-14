@@ -169,6 +169,7 @@ FROM node:20 AS runner
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 CMD ["node", "dist/index.js"]
+
 ```
 
 ---
@@ -181,3 +182,38 @@ CMD ["node", "dist/index.js"]
 - 네트워크 체크, 캐시 활용, 빌드 실패 자동 알림 등도 추가로 적용할 수 있습니다.
 
 더 필요한 자동화, 품질관리, 배포, 모니터링 등 요청이 있으시면 언제든 말씀해 주세요! 
+
+---
+
+현재 개발환경과 프로그램들의 호환성 및 최적화 상태를 점검한 결과를 요약해드립니다.
+
+---
+
+### 1. Python 기반 서비스(AI Engine, Backend)
+- **Dockerfile이 Node.js 기반으로 잘못 설정되어 있었으나, Python FastAPI 기반으로 정상화 완료**
+- requirements.txt도 정상적으로 존재하며, Docker 빌드 테스트 결과 성공적으로 이미지 생성됨
+- Python 3.11, FastAPI, Uvicorn 등 주요 버전 호환성 문제 없음
+
+### 2. 프론트엔드(Next.js)
+- Dockerfile은 Node.js + pnpm 기반으로 적절하게 작성됨
+- 단, pnpm-lock.yaml과 package.json의 의존성 버전 불일치로 인해 빌드가 실패함  
+  → pnpm-lock.yaml을 최신 package.json에 맞게 다시 생성해야 함
+
+### 3. 공통 환경
+- Python, Node.js, pnpm, Docker, Docker Compose 모두 최신 버전으로 설치되어 있음
+- 네트워크 체크, 캐시 활용 등 최적화 요소도 Dockerfile에 반영됨
+
+---
+
+## 결론 및 조치
+- **AI Engine, Backend**: 정상적으로 최적화 및 호환성 확보됨(문제 없음)
+- **Frontend**: pnpm-lock.yaml을 package.json에 맞게 재생성 필요(아래 명령어 실행)
+  ```sh
+  cd apps/frontend
+  pnpm install
+  ```
+  이후 다시 Docker 빌드를 시도하면 정상적으로 동작할 것으로 예상됩니다.
+
+---
+
+추가적으로 궁금한 점이나, 프론트엔드 lockfile 재생성까지 자동화가 필요하다면 말씀해 주세요! 
